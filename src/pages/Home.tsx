@@ -32,6 +32,7 @@ export default function Home({ cal, settings, onFinish }: { cal: Calibration; se
   const [ntype, setNtype] = useState<NoiseType>('unknown'); const [mlOk, setMlOk] = useState(true)
   const [focusMin, setFocusMin] = useState(num('cs.focus', 25)); const [breakMin, setBreakMin] = useState(num('cs.break', 5))
   const [phase, setPhase] = useState<'focus' | 'break'>('focus'); const [run, setRun] = useState(false); const [left, setLeft] = useState(focusMin * 60)
+  const [dndReminder, setDndReminder] = useState(false)
   const [saveErr, setSaveErr] = useState(false)
   const masker = useRef(new Masker()).current; const hyst = useRef(new Hysteresis()); const clf = useRef<NoiseClassifier>()
   const rec = useRef<Rec | null>(null); const leftRef = useRef(left); const phaseRef = useRef(phase); const wake = useRef<any>(null)
@@ -167,11 +168,16 @@ export default function Home({ cal, settings, onFinish }: { cal: Calibration; se
     return () => clearInterval(id)
   }, [run])
 
-  const begin = async () => {
+  const startTimer = async () => {
+    setDndReminder(false)
     masker.unlock(); if (!active) await start()
     if (phaseRef.current === 'focus' && !rec.current) rec.current = { start: Date.now(), elapsed: 0, samples: [], events: [], secs: {}, min: [], minType: [] }
     try { wake.current = await (navigator as any).wakeLock?.request('screen') } catch { /* optional */ }
     setRun(true)
+  }
+  const begin = () => {
+    if (phaseRef.current === 'focus') setDndReminder(true)
+    else void startTimer()
   }
   const reset = () => { rec.current = null; setRun(false); wake.current?.release?.(); phaseRef.current = 'focus'; setPhase('focus'); leftRef.current = focusMin * 60; setLeft(leftRef.current) }
   const setMin = (k: 'focus' | 'break', v: number) => {
@@ -250,6 +256,19 @@ export default function Home({ cal, settings, onFinish }: { cal: Calibration; se
           <label>Break min <input type="number" value={breakMin} onChange={(e) => setMin('break', +e.target.value)} className="h-10 w-16 rounded-lg border-2 border-mute bg-bg px-2" /></label></div>}
         {saveErr && <p role="alert" className="text-bad">Couldn’t save to this device’s storage. It may be full or blocked in private mode.</p>}
       </section>
+      {dndReminder && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+        <section role="dialog" aria-modal="true" aria-labelledby="dnd-title" className="flex w-full max-w-md flex-col gap-4 rounded-3xl bg-card p-6 shadow-xl">
+          <h2 id="dnd-title" className="text-2xl font-extrabold">Prepare for focus</h2>
+          <p>This web app can’t silence phone calls or system notifications. Turn on Do Not Disturb on your device to reduce interruptions.</p>
+          <div className="rounded-2xl bg-bg p-4 text-sm">
+            <p><b>iPhone:</b> Open Control Center, tap Focus, then Do Not Disturb.</p>
+            <p className="mt-2"><b>Android:</b> Open Quick Settings and tap Do Not Disturb.</p>
+          </div>
+          <button className="btn btn-primary w-full" onClick={() => void startTimer()}>I’ve enabled it — start focus</button>
+          <button className="btn btn-ghost w-full" onClick={() => void startTimer()}>Start without it</button>
+          <button className="min-h-[44px] underline" onClick={() => setDndReminder(false)}>Cancel</button>
+        </section>
+      </div>}
     </main>
   )
 }
