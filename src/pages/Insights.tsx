@@ -20,7 +20,7 @@ export default function Insights() {
   })
   const ok = byPlace.filter((p) => p.n >= MIN), top = ok.sort((a, b) => a.db - b.db)[0]?.place
   return (
-    <main className="mx-auto flex max-w-md flex-col gap-4 p-5 pb-28">
+    <main className="flex flex-col gap-4 p-4 pb-[calc(11rem+env(safe-area-inset-bottom))] sm:mx-auto sm:max-w-md sm:p-5">
       <h1 className="text-3xl font-extrabold">Insights</h1>
       <section className="rounded-3xl bg-card p-5">
         <h2 className="text-xl font-extrabold">Focus windows</h2>

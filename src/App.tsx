@@ -32,8 +32,8 @@ export default function App() {
       {sid === null && tab === 'results' && <Results />}
       {sid === null && tab === 'settings' && <SettingsPage settings={settings} onChange={upd} onRecalibrate={() => setCalibrating(true)} onBack={() => setTab('home')}
         onDelete={async () => { await db.delete(); localStorage.clear(); location.reload() }} />}
-      <nav className="fixed inset-x-0 bottom-0 flex justify-around border-t-2 border-mute/30 bg-card pb-[env(safe-area-inset-bottom)]" aria-label="Main">
-        {TABS.map(([k, l]) => <button key={k} onClick={() => { setSid(null); setTab(k) }} aria-current={tab === k && sid === null} className={`min-h-[56px] min-w-0 flex-1 text-xs font-bold sm:text-sm ${tab === k && sid === null ? 'text-accent underline' : 'text-mute'}`}>{l}</button>)}
+      <nav className="fixed inset-x-0 bottom-0 z-50 flex h-[64px] justify-around border-t border-[#76C0EC]/40 bg-[#425B9A] pb-[max(env(safe-area-inset-bottom),0.5rem)]" aria-label="Main">
+        {TABS.map(([k, l]) => <button key={k} onClick={() => { setSid(null); setTab(k) }} aria-current={tab === k && sid === null} className={`min-h-[52px] min-w-0 flex-1 text-xs font-bold sm:text-sm ${tab === k && sid === null ? 'text-[#FFF6DC] underline underline-offset-4' : 'text-[#dfeeff]'}`}>{l}</button>)}
       </nav>
     </>
   )

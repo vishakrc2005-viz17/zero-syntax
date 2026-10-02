@@ -32,7 +32,7 @@ export default function CalibrationPage({ onSave, onSkip }: { onSave: (c: Cal) =
   useEffect(() => () => stop(), [stop])
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center gap-5 p-6">
+    <main className="flex min-h-screen flex-col justify-center gap-5 p-4 sm:mx-auto sm:max-w-md sm:p-6">
       <h1 className="text-3xl font-extrabold">Calibrate your mic</h1>
       <MicError error={error} />
       {phase === 'intro' && <>

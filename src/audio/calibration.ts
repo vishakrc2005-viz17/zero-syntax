@@ -3,6 +3,7 @@ export interface Calibration { a: number; b: number; done: boolean }
 export interface Settings {
   goodMax: number; distractMax: number; onboarded: boolean
   autoGoodPercent: number; autoDistractingPercent: number; autoLoudPercent: number
+  blockNotifications?: boolean
 }
 
 // dB = a + b * 20*log10(rms). Uncalibrated default: dBFS + 95 (rough phone-mic guess).
@@ -10,6 +11,7 @@ export const DEFAULT_CAL: Calibration = { a: 95, b: 1, done: false }
 export const DEFAULT_SETTINGS: Settings = {
   goodMax: 45, distractMax: 60, onboarded: false,
   autoGoodPercent: 25, autoDistractingPercent: 60, autoLoudPercent: 75,
+  blockNotifications: false,
 }
 
 const load = <T,>(k: string, d: T): T => {

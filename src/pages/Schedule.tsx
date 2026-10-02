@@ -81,7 +81,7 @@ export default function Schedule() {
   )
 
   return (
-    <main className="mx-auto flex max-w-md flex-col gap-5 p-5 pb-28">
+    <main className="flex flex-col gap-5 p-4 pb-[calc(11rem+env(safe-area-inset-bottom))] sm:mx-auto sm:max-w-md sm:p-5">
       <h1 className="text-3xl font-extrabold">Schedule</h1>
       <form onSubmit={(event) => void addTask(event)} className="flex flex-col gap-4 rounded-3xl bg-card p-5">
         <h2 className="text-xl font-extrabold">Plan work or study</h2>

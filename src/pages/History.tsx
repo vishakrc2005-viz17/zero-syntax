@@ -3,7 +3,7 @@ import { db } from '../db/db'
 export default function History({ onOpen }: { onOpen: (id: number) => void }) {
   const rows = useLiveQuery(() => db.sessions.orderBy('start').reverse().toArray(), [], [])
   return (
-    <main className="mx-auto flex max-w-md flex-col gap-3 p-5 pb-28">
+    <main className="flex flex-col gap-3 p-4 pb-[calc(11rem+env(safe-area-inset-bottom))] sm:mx-auto sm:max-w-md sm:p-5">
       <h1 className="text-3xl font-extrabold">History</h1>
       {!rows.length && <p className="text-mute">No sessions yet. Start a focus timer on Home.</p>}
       {rows.map((s) => (

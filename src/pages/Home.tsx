@@ -130,6 +130,12 @@ export default function Home({ cal, settings, onFinish }: { cal: Calibration; se
 
   const finish = async () => {
     const r = rec.current; rec.current = null; setRun(false); wake.current?.release?.()
+    // Restore notifications when session ends
+    if (settings.blockNotifications && 'Notification' in window) {
+      try {
+        if ((navigator as any).setAppBadge) await (navigator as any).setAppBadge(0)
+      } catch { /* optional */ }
+    }
     if (!r || r.elapsed < 10) return
     const dbs = r.samples.map((s) => s.db), n = dbs.length, pc = (f: (d: number) => boolean) => (dbs.filter(f).length / n) * 100
     const sound = Object.entries(r.secs).sort((a, b) => b[1] - a[1])[0]?.[0] ?? 'none'
@@ -170,6 +176,19 @@ export default function Home({ cal, settings, onFinish }: { cal: Calibration; se
 
   const startTimer = async () => {
     setDndReminder(false)
+    // Block notifications when session starts if enabled
+    if (settings.blockNotifications && 'Notification' in window) {
+      try {
+        if (Notification.permission === 'granted') {
+          // Attempt to disable notifications by setting badge
+          if ((navigator as any).setAppBadge) await (navigator as any).setAppBadge(1)
+          // For PWA: if supported, use the notification control API
+          if ((navigator as any).notification && (navigator as any).notification.setStatus) {
+            (navigator as any).notification.setStatus('do-not-disturb')
+          }
+        }
+      } catch { /* optional */ }
+    }
     masker.unlock(); if (!active) await start()
     if (phaseRef.current === 'focus' && !rec.current) rec.current = { start: Date.now(), elapsed: 0, samples: [], events: [], secs: {}, min: [], minType: [] }
     try { wake.current = await (navigator as any).wakeLock?.request('screen') } catch { /* optional */ }
@@ -189,8 +208,11 @@ export default function Home({ cal, settings, onFinish }: { cal: Calibration; se
   const chip = (on: boolean) => `${tab} ${on ? 'bg-accent text-bg' : 'border-2 border-mute'}`
 
   return (
-    <main className="mx-auto flex max-w-md flex-col gap-5 p-5 pb-28">
-      <section className="flex flex-col items-center gap-3 rounded-3xl bg-card p-5">
+    <main className="flex flex-col gap-5 p-4 pb-[calc(11rem+env(safe-area-inset-bottom))] sm:mx-auto sm:max-w-md sm:p-5">
+      <header className="pt-2 text-center">
+        <h1 className="text-5xl font-black tracking-tight text-[#FFF6DC] sm:text-[3.2rem]">CalmStudy</h1>
+      </header>
+      <section className="flex flex-col items-center gap-3 rounded-3xl bg-card/80 backdrop-blur-sm p-5 border border-accent/20">
         {active && <p className="flex items-center gap-2 font-semibold"><span className="h-3 w-3 animate-pulse rounded-full bg-bad" />Mic active</p>}
         <p className="text-6xl font-extrabold tabular-nums">{active ? `≈ ${Math.round(level)} dB` : '— dB'}</p>
         <div className="h-5 w-full overflow-hidden rounded-full bg-bg" role="meter" aria-valuenow={Math.round(level)} aria-valuemin={0} aria-valuemax={100}>

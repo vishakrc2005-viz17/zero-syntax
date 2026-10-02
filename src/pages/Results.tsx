@@ -9,7 +9,7 @@ export default function Results() {
   const bestSound = best(rate(rows, (s) => s.sound))
   const [cs, cn] = combo ? combo.k.split('|') : []
   return (
-    <main className="mx-auto flex max-w-md flex-col gap-4 p-5 pb-28">
+    <main className="flex flex-col gap-4 p-4 pb-[calc(11rem+env(safe-area-inset-bottom))] sm:mx-auto sm:max-w-md sm:p-5">
       <h1 className="text-3xl font-extrabold">Results</h1>
       <section className="rounded-3xl bg-accent p-5 text-bg">
         <h2 className="text-xl font-extrabold">Best for you</h2>
